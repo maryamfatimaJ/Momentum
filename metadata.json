@@ -1,0 +1,6 @@
+{
+  "name": "Momentum",
+  "description": "Build Momentum. One Habit at a Time. AI-powered habit tracking, streaks, calendar heatmaps, and smart AI coaching.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
