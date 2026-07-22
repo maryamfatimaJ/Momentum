@@ -28,6 +28,7 @@ export const AICoachWidget: React.FC = () => {
     <>
       {/* Floating AI Assistant Button */}
       <button
+        data-tour="ai-coach"
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-full bg-[#0F172A] text-white shadow-xl hover:bg-[#1E293B] hover:shadow-2xl transition-all duration-300 flex items-center gap-2.5 cursor-pointer group border border-slate-700/50"
       >

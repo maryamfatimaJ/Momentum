@@ -11,6 +11,7 @@ import { AnalyticsView } from '../analytics/AnalyticsView';
 import { SettingsView } from '../settings/SettingsView';
 import { CreateHabitModal } from '../habits/CreateHabitModal';
 import { NaturalLanguageHabitModal } from '../habits/NaturalLanguageHabitModal';
+import { OnboardingTour } from '../onboarding/OnboardingTour';
 import { 
   LayoutDashboard, 
   Layers, 
@@ -86,6 +87,7 @@ export const DashboardLayout: React.FC = () => {
             </button>
 
             <button
+              data-tour="create-habit"
               onClick={() => setIsCreateOpen(true)}
               className="px-4 py-2 rounded-xl bg-[#0F172A] text-white text-xs font-medium hover:bg-[#1E293B] transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
             >
@@ -101,9 +103,14 @@ export const DashboardLayout: React.FC = () => {
           {navItems.map(item => {
             const IconComp = item.icon;
             const isActive = activeTab === item.id;
+            const tourAttr =
+              item.id === 'dashboard' ? 'nav-dashboard' :
+              item.id === 'calendar' ? 'nav-calendar' :
+              item.id === 'streaks' ? 'nav-milestones' : undefined;
             return (
               <button
                 key={item.id}
+                data-tour={tourAttr}
                 onClick={() => setActiveTab(item.id)}
                 className={`px-4 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
                   isActive
@@ -173,6 +180,8 @@ export const DashboardLayout: React.FC = () => {
         isOpen={isMagicAIOpen}
         onClose={() => setIsMagicAIOpen(false)}
       />
+
+      <OnboardingTour />
 
     </div>
   );
