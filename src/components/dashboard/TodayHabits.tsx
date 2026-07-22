@@ -137,9 +137,13 @@ export const TodayHabits: React.FC<TodayHabitsProps> = ({ onOpenCreate, onOpenMa
           <div className="w-10 h-10 mx-auto rounded-xl bg-[#F8FAFC] dark:bg-slate-800/60 flex items-center justify-center text-[#94A3B8] dark:text-slate-500">
             <Layers className="w-5 h-5 text-[#00A8B5]" />
           </div>
-          <h3 className="text-sm font-semibold text-[#0F172A] dark:text-slate-100">No routines match these filters</h3>
+          <h3 className="text-sm font-semibold text-[#0F172A] dark:text-slate-100">
+            {habits.length === 0 ? 'Create your first habit' : 'No routines match these filters'}
+          </h3>
           <p className="text-xs text-[#64748B] dark:text-slate-400 max-w-xs mx-auto">
-            Try switching filters or add a new habit to start your routine.
+            {habits.length === 0
+              ? 'Start building momentum by adding a habit you want to track daily.'
+              : 'Try switching filters or add a new habit to start your routine.'}
           </p>
           <button
             onClick={onOpenCreate}

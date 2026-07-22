@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useHabitContext } from '../../context/HabitContext';
-import { User, Moon, Sun, Download, Trash2, ShieldCheck, CheckCircle2, LogOut, LogIn } from 'lucide-react';
+import { User, Moon, Sun, Download, Trash2, ShieldCheck, CheckCircle2, LogOut, LogIn, Sparkles } from 'lucide-react';
 
 export const SettingsView: React.FC = () => {
-  const { userProfile, updateProfile, theme, toggleTheme, habits, logs, session, signOut, openAuthModal, resetAllData } = useHabitContext();
+  const { userProfile, updateProfile, theme, toggleTheme, habits, logs, session, signOut, openAuthModal, resetAllData, loadDemoData } = useHabitContext();
 
   const [name, setName] = useState(userProfile.name);
   const [email, setEmail] = useState(userProfile.email);
@@ -28,8 +28,14 @@ export const SettingsView: React.FC = () => {
   };
 
   const handleResetData = () => {
-    if (window.confirm("Are you sure you want to reset all habit progress to initial state? This action cannot be undone.")) {
+    if (window.confirm("Are you sure you want to reset all habit progress? This clears everything back to an empty state and cannot be undone.")) {
       resetAllData();
+    }
+  };
+
+  const handleLoadDemoData = () => {
+    if (window.confirm("Load sample habits, streaks, and milestones to explore the app? This replaces your current local data.")) {
+      loadDemoData();
     }
   };
 
@@ -203,6 +209,16 @@ export const SettingsView: React.FC = () => {
             <Download className="w-4 h-4 text-[#63C7D8]" />
             <span>Export Habit Backup (JSON)</span>
           </button>
+
+          {!session?.user && (
+            <button
+              onClick={handleLoadDemoData}
+              className="px-6 py-3 rounded-xl bg-[#F8FAFC] dark:bg-slate-800 border border-[#E5EEF2] dark:border-slate-700 text-[#1E293B] dark:text-slate-100 text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+            >
+              <Sparkles className="w-4 h-4 text-[#C7B8FF]" />
+              <span>Load Demo Data</span>
+            </button>
+          )}
 
           <button
             onClick={handleResetData}

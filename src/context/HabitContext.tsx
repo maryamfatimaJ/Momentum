@@ -16,7 +16,11 @@ import {
   DAILY_CHALLENGES_POOL,
   MOTIVATIONAL_QUOTES,
   INITIAL_MILESTONES,
-  INITIAL_PROFILE
+  INITIAL_PROFILE,
+  GUEST_DEFAULT_PROFILE,
+  EMPTY_MILESTONES,
+  DEMO_AI_INSIGHT,
+  DEMO_AI_WEEKLY_REVIEW
 } from '../data/initialData';
 import {
   getTodayKey,
@@ -78,6 +82,7 @@ interface HabitContextType {
   chatHistory: Array<{ role: 'user' | 'assistant'; text: string }>;
   sendCoachMessage: (question: string) => Promise<void>;
   resetAllData: () => Promise<void>;
+  loadDemoData: () => void;
 
   // Computed stats
   streakStats: { currentStreak: number; longestStreak: number; completionRate: number; bestMonth: string };
@@ -120,26 +125,26 @@ export const HabitProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const openAuthModal = () => setIsAuthModalOpen(true);
   const closeAuthModal = () => setIsAuthModalOpen(false);
 
-  // Load from local storage or defaults (guest mode / instant-boot cache)
+  // Load from local storage, or a brand-new/empty state for a first-time guest
+  // (no sample habits/streaks/milestones -- see loadDemoData for the opt-in demo fill).
   const [habits, setHabits] = useState<Habit[]>(() => {
     const saved = localStorage.getItem('momentum_habits');
-    return saved ? JSON.parse(saved) : INITIAL_HABITS;
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [logs, setLogs] = useState<HabitCompletionLog[]>(() => {
     const saved = localStorage.getItem('momentum_logs');
-    if (saved) return JSON.parse(saved);
-    return generateInitialHeatmapLogs(INITIAL_HABITS);
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [userProfile, setUserProfile] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('momentum_profile');
-    return saved ? JSON.parse(saved) : INITIAL_PROFILE;
+    return saved ? JSON.parse(saved) : GUEST_DEFAULT_PROFILE;
   });
 
   const [milestones, setMilestones] = useState<StreakMilestone[]>(() => {
     const saved = localStorage.getItem('momentum_milestones');
-    return saved ? JSON.parse(saved) : INITIAL_MILESTONES;
+    return saved ? JSON.parse(saved) : EMPTY_MILESTONES;
   });
 
   const [todayChallenge, setTodayChallenge] = useState<DailyChallenge>(() => {
@@ -170,31 +175,12 @@ export const HabitProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   const [aiInsight, setAiInsight] = useState<AICoachInsight | null>(() => {
     const saved = localStorage.getItem('momentum_ai_insight');
-    if (saved) return JSON.parse(saved);
-    return {
-      headline: "Small consistent steps create compound transformation.",
-      insight: "You're showing consistent momentum across morning fitness and hydration routines.",
-      tip: "Complete your reading habit early in the evening to optimize your pre-sleep wind-down.",
-      recoveryPlan: "If you miss a session, lower the bar to just 2 minutes rather than skipping entirely.",
-      detectedWeakness: "Read 15 Pages",
-      motivationalQuote: "Progress grows where consistency lives."
-    };
+    return saved ? JSON.parse(saved) : null;
   });
 
   const [aiWeeklyReview, setAiWeeklyReview] = useState<AIWeeklyReview | null>(() => {
     const saved = localStorage.getItem('momentum_ai_weekly_review');
-    if (saved) return JSON.parse(saved);
-    return {
-      summary: "An exceptional week of deliberate focus. Your hydration and fitness habits achieved 92% compliance.",
-      scoreGrade: "A+",
-      strongestHabit: "Hydrate (Drink Water)",
-      focusArea: "Read 15 Pages",
-      recommendations: [
-        "Pair your reading habit immediately after evening tea to leverage habit stacking.",
-        "Set your workout gear out the night before to eliminate morning friction.",
-        "Keep up your 10-minute meditation streak for mental stamina."
-      ]
-    };
+    return saved ? JSON.parse(saved) : null;
   });
 
   const [chatHistory, setChatHistory] = useState<Array<{ role: 'user' | 'assistant'; text: string }>>(() => {
@@ -861,11 +847,23 @@ export const HabitProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       await supabase.from('milestones').delete().eq('user_id', session.user.id);
     }
     localStorage.clear();
+    setHabits([]);
+    setLogs([]);
+    setUserProfile(GUEST_DEFAULT_PROFILE);
+    setMilestones(EMPTY_MILESTONES);
+    setAiInsight(null);
+    setAiWeeklyReview(null);
+    window.location.reload();
+  };
+
+  // Explicit, opt-in sample data fill for exploring the app -- a first-time guest
+  // otherwise starts completely empty (see the useState initializers above).
+  const loadDemoData = () => {
     setHabits(INITIAL_HABITS);
     setLogs(generateInitialHeatmapLogs(INITIAL_HABITS));
-    setUserProfile(INITIAL_PROFILE);
     setMilestones(INITIAL_MILESTONES);
-    window.location.reload();
+    setAiInsight(DEMO_AI_INSIGHT);
+    setAiWeeklyReview(DEMO_AI_WEEKLY_REVIEW);
   };
 
   return (
@@ -916,6 +914,7 @@ export const HabitProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         chatHistory,
         sendCoachMessage,
         resetAllData,
+        loadDemoData,
         streakStats,
         todayCompletionPercent
       }}

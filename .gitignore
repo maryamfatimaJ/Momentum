@@ -7,11 +7,7 @@ build/
 *.tsbuildinfo
 
 # Environment variables -- never commit real secrets
-.env
-.env.local
-.env.*.local
-.env.development
-.env.production
+.env*
 !.env.example
 
 # Logs
@@ -44,8 +40,8 @@ desktop.ini
 # Deployment tooling
 .vercel/
 
-# Claude Code local (machine-specific) settings -- never shared/committed
-.claude/settings.local.json
+# Claude Code local (machine-specific) session state -- never shared/committed
+.claude/
 
 # Misc
 *.local

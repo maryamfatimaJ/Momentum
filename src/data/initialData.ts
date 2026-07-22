@@ -1,4 +1,4 @@
-import { Habit, DailyChallenge, StreakMilestone, MotivationalQuote, UserProfile } from '../types';
+import { Habit, DailyChallenge, StreakMilestone, MotivationalQuote, UserProfile, AICoachInsight, AIWeeklyReview } from '../types';
 
 export const PRESET_HABITS: Omit<Habit, 'id' | 'createdAt'>[] = [
   {
@@ -317,4 +317,47 @@ export const INITIAL_PROFILE: UserProfile = {
   reminderTime: '08:00',
   primaryGoal: 'Peak performance, mental clarity, and daily fitness momentum',
   joinedDate: '2026-01-01'
+};
+
+// A brand-new guest gets a blank profile rather than the "Alex Rivera" demo persona.
+export const GUEST_DEFAULT_PROFILE: UserProfile = {
+  name: 'Guest',
+  email: '',
+  avatarUrl: '',
+  theme: 'light',
+  notificationsEnabled: true,
+  reminderTime: '08:00',
+  primaryGoal: '',
+  joinedDate: ''
+};
+
+// All milestones start locked for a brand-new guest -- INITIAL_MILESTONES pre-unlocks
+// the 7/21-day tiers purely for demo purposes (see loadDemoData in HabitContext).
+export const EMPTY_MILESTONES: StreakMilestone[] = INITIAL_MILESTONES.map(m => ({
+  ...m,
+  unlocked: false,
+  unlockedAt: undefined
+}));
+
+// Sample AI Coach content shown only after the user explicitly loads demo data;
+// a real guest sees these as null until they refresh insights/ask a question.
+export const DEMO_AI_INSIGHT: AICoachInsight = {
+  headline: "Small consistent steps create compound transformation.",
+  insight: "You're showing consistent momentum across morning fitness and hydration routines.",
+  tip: "Complete your reading habit early in the evening to optimize your pre-sleep wind-down.",
+  recoveryPlan: "If you miss a session, lower the bar to just 2 minutes rather than skipping entirely.",
+  detectedWeakness: "Read 15 Pages",
+  motivationalQuote: "Progress grows where consistency lives."
+};
+
+export const DEMO_AI_WEEKLY_REVIEW: AIWeeklyReview = {
+  summary: "An exceptional week of deliberate focus. Your hydration and fitness habits achieved 92% compliance.",
+  scoreGrade: "A+",
+  strongestHabit: "Hydrate (Drink Water)",
+  focusArea: "Read 15 Pages",
+  recommendations: [
+    "Pair your reading habit immediately after evening tea to leverage habit stacking.",
+    "Set your workout gear out the night before to eliminate morning friction.",
+    "Keep up your 10-minute meditation streak for mental stamina."
+  ]
 };

@@ -131,6 +131,15 @@ export const AICoachWidget: React.FC = () => {
                   </>
                 )}
 
+                {!aiInsight && chatHistory.length === 0 && (
+                  <div className="p-6 text-center rounded-2xl border border-dashed border-[#EEF2F6] dark:border-slate-700 space-y-2">
+                    <Bot className="w-6 h-6 mx-auto text-[#00A8B5]" />
+                    <p className="text-xs text-[#64748B] dark:text-slate-400">
+                      Ask a question below or refresh for personalized insights.
+                    </p>
+                  </div>
+                )}
+
                 {/* Conversation History */}
                 {chatHistory.length > 0 && (
                   <div className="space-y-3 pt-2">
