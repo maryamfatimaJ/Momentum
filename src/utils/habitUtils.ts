@@ -18,6 +18,37 @@ export function formatFriendlyDate(dateStr: string): string {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+// Upper bound for a single progress entry -- guards against typos like 7000 for 7
+// while leaving room for large-unit habits such as daily steps.
+export const MAX_PROGRESS_ENTRY = 100000;
+
+export type ProgressEntryResult = { ok: true; amount: number } | { ok: false; error: string };
+
+// Validates a user-typed progress amount (e.g. pages read). Only positive whole
+// numbers are accepted -- no zero, negatives, decimals or exponent notation.
+export function parseProgressEntry(raw: string, unit = 'pages'): ProgressEntryResult {
+  const trimmed = raw.trim();
+  if (trimmed === '') return { ok: false, error: `Enter how many ${unit} to log.` };
+  if (/^-\d*\.?\d+$/.test(trimmed)) return { ok: false, error: 'Enter a number greater than 0.' };
+  if (!/^\d+$/.test(trimmed)) return { ok: false, error: 'Use a whole number, like 7.' };
+  const amount = Number(trimmed);
+  if (amount <= 0) return { ok: false, error: 'Enter a number greater than 0.' };
+  if (amount > MAX_PROGRESS_ENTRY) return { ok: false, error: `That's more than ${MAX_PROGRESS_ENTRY.toLocaleString()} in one go.` };
+  return { ok: true, amount };
+}
+
+// Progress for a quantity habit. `current` keeps the real total (it may exceed the
+// target), while `percent` is capped at 100 and only reaches 100 once the goal is met.
+export function getProgressSummary(current: number, target: number) {
+  const safeTarget = target > 0 ? target : 1;
+  const percent = current >= safeTarget ? 100 : Math.min(99, Math.round((current / safeTarget) * 100));
+  return {
+    percent,
+    remaining: Math.max(0, safeTarget - current),
+    extra: Math.max(0, current - safeTarget)
+  };
+}
+
 // Trigger smooth celebratory confetti
 export function triggerCelebrationConfetti() {
   confetti({
